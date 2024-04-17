@@ -100,7 +100,7 @@ const Database = async ({ ipfs, identity, address, name, access, directory, meta
 
   headsStorage = headsStorage || await ComposedStorage(
     await LRUStorage({ size: defaultCacheSize }),
-    await LevelStorage({ path: pathJoin(directory, '/log/_heads/') })
+    await LevelStorage({ path: pathJoin(directory, '/log/_heads/'), valueEncoding: 'json' })
   )
 
   indexStorage = indexStorage || await ComposedStorage(

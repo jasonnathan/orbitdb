@@ -9,19 +9,13 @@ import MemoryStorage from '../storage/memory.js'
 
 const DefaultStorage = MemoryStorage
 
-const Heads = async ({ storage, heads }) => {
+const Heads = async ({ storage, heads, entryStorage }) => {
   storage = storage || await DefaultStorage()
 
   const put = async (heads) => {
     heads = findHeads(heads)
-    for (const head of heads) {
-      await storage.put(head.hash, head.bytes)
-    }
-  }
-
-  const set = async (heads) => {
-    await storage.clear()
-    await put(heads)
+    const headHashes = heads.map(e => e.hash)
+    await storage.put('heads', headHashes)
   }
 
   const add = async (head) => {
@@ -42,9 +36,10 @@ const Heads = async ({ storage, heads }) => {
   }
 
   const iterator = async function * () {
-    const it = storage.iterator()
-    for await (const [, bytes] of it) {
-      const head = await Entry.decode(bytes)
+    const headHashes = await storage.get('heads')
+    for (const hash of headHashes) {
+      const entry = await entryStorage.get(hash)
+      const head = await Entry.decode(entry)
       yield head
     }
   }
@@ -70,7 +65,7 @@ const Heads = async ({ storage, heads }) => {
 
   return {
     put,
-    set,
+    set: put,
     add,
     remove,
     iterator,

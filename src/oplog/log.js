@@ -79,7 +79,7 @@ const Log = async (identity, { logId, logHeads, access, entryStorage, headsStora
   // Heads storage
   headsStorage = headsStorage || await DefaultStorage()
   // Add heads to the state storage, ie. init the log state
-  const _heads = await Heads({ storage: headsStorage, heads: logHeads })
+  const _heads = await Heads({ storage: headsStorage, heads: logHeads, entryStorage: _entries })
   // Conflict-resolution sorting function
   sortFn = NoZeroes(sortFn || LastWriteWins)
   // Internal queues for processing appends and joins in their call-order
